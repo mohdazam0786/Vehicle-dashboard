@@ -19,8 +19,33 @@ const App = () => {
     (vehicle) =>
       vehicle.Name.toLowerCase().includes(searchValue.toLowerCase()) ||
       vehicle.Model.toLowerCase().includes(searchValue.toLowerCase()) ||
-      vehicle.Manufacturer.toLowerCase().includes(searchValue.toLowerCase())
-  );
+      vehicle.Manufacturer.toLowerCase().includes(searchValue.toLowerCase()) ||
+      (vehicle.Type && vehicle.Type.toLowerCase().includes(searchValue.toLowerCase()))
+  )
+    .sort((a, b) => {
+      const searchTerm = searchValue.toLowerCase();
+      const aMatch =
+        a.Name.toLowerCase().startsWith(searchTerm) ||
+        a.Model.toLowerCase().startsWith(searchTerm) ||
+        a.Manufacturer.toLowerCase().startsWith(searchTerm) ||
+        (a.Type && a.Type.toLowerCase().startsWith(searchTerm));
+  
+      const bMatch =
+        b.Name.toLowerCase().startsWith(searchTerm) ||
+        b.Model.toLowerCase().startsWith(searchTerm) ||
+        b.Manufacturer.toLowerCase().startsWith(searchTerm) ||
+        (b.Type && b.Type.toLowerCase().startsWith(searchTerm));
+  
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+      return 0;
+    })
+    // Remove duplicates based on 'Name' field or any other key field
+    .filter((vehicle, index, self) => 
+      index === self.findIndex((v) => v.Name === vehicle.Name)
+    );
+  
+  
 
   const col = [
     { title: "Name", dataIndex: "Name", key: "name" },
